@@ -5,7 +5,7 @@ I made it because JQuery's ajax libraries has a lot of bloat after trying to app
 
 After including **go.js** or **go.tiny.js** you can use it with a call like:
 
-```
+```js
   go.get('/giraffes').then((giraffes) => {
     JSON.parse(giraffes).forEach((giraffe) => {
       console.log(giraffe);
