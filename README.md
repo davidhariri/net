@@ -4,13 +4,13 @@ Go is a JavaScript library for making JSON-bearing XHR requests. It's goals are 
 After including **go.js** or **go.tiny.js** in your project you can use it like this:
 
 ```js
-  go
-  .get('https://api.giraffefacts.com/facts')
-  .then((facts) => {
-    this.forEach((fact) => {
-      console.log(fact);
-    });
+go
+.get('https://api.giraffefacts.com/facts')
+.then((facts) => {
+  this.forEach((fact) => {
+    console.log(fact);
   });
+});
 ```
 
 Wasn't that fun? Go is small. *Really*, *really* small. This is because it assumes all you want to do with it is send and receive JSON to API's and nothing else. Check out the docs below:
