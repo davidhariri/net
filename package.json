@@ -30,6 +30,7 @@
     "grunt-contrib-nodeunit": "^0.4.1",
     "install": "^0.1.8",
     "load-grunt-tasks": "^3.2.0",
+    "nodeunit": "^0.9.1",
     "npm": "^2.12.1"
   }
 }

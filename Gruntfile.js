@@ -8,8 +8,7 @@ module.exports = function(grunt) {
 	        },
 	        default: {
 	            files: {
-	                'build/go.js': 'source/go.js',
-					'build/test.js' : 'test/test.js'
+	                'build/go.js': 'source/go.js'
 	            }
 	        }
 	    }
