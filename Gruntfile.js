@@ -1,19 +1,20 @@
 // NOTE: My methodology is "/build/go.js" is always the latest passing build
 // NOTE: I achieve this by making sure all tests pass before putting anything in /build
-// NOTE: I treat /temp as a kind of quarantine
-// NOTE: Below are my instructions:
-
-// 1: Clean the /temp and /build dirs
-// 2: Copy the source/go.js to /temp/go.js for dependencies, transpiling, testing etc...
-// 3: Run our tests in the temp folder
-// 4: Copy over our library once all tests have passed to /build/go.js
-// 5: Minifiy /build/go.js to /build/go.min.js
-// 5: Clean the /temp and /build dirs
-
+// NOTE: I treat /temp as a kind of quarantine area until I'm sure the library is good to ship
 // NOTE: We have to transpile all js to ES5 for now since uglify doesn't work on ES6 yet
-// NOTE: In the future I'd like to be able to build two different versions
-// NOTE: In the future future I'd like to be able to remove all this crap and just have it run natively in ES6 syntax :-)
+// 		 In the future I'd like to be able to build two different versions
+// 		 In the future future I'd like to be able to remove all this crap and just have it run natively in ES6 syntax :-)
 
+
+/*
+
+We have to transpile all js to ES5 for now since uglify doesn't work on ES6 yet
+My methodology is "/build" is always the latest passing build and "/source" is always clean
+Node doesn't support XMLHttpRequest's so I had to install a library (in dev dependencies)
+that adds support for it. This library gets injected during the testing phase,
+but is omitted in the build phase
+
+*/
 module.exports = function(grunt) {
 	require('load-grunt-tasks')(grunt);
     grunt.initConfig({
