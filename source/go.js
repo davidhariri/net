@@ -1,9 +1,9 @@
 // © David Hariri, 2015
 // Developed while working on Volley
 
-// TODO: Unit testing with nodeunit
 // TODO: Publish to NPM
-// TODO: Document how to contribute
+// TODO: Better error handling
+// {{Node Requirements}}
 
 // Define some default settings to use which can be overridden in setup
 let settings = {
@@ -20,7 +20,7 @@ class Request {
         if(method.length > 0 && address.length > 0) {
             // Return a Promise to the Caller
             return new Promise((resolve, reject) => {
-                // TODO: Async flag should be a configurable option
+                // FIXME: Async flag should be a configurable option
                 request.open(method, address, true);
 
                 // For all the headers, add them to the request
@@ -29,6 +29,20 @@ class Request {
                     // Add the Header
                     request.setRequestHeader(header, content);
                 }
+
+                // Define when to call resolve and when to call reject
+                request.onload = function() {
+                    const response = request.responseText;
+                    resolve(response);
+                };
+
+                request.onerror = function() {
+                    const response = request.responseText;
+                    reject(response);
+                }
+
+                // Send the request!
+                request.send();
             });
         }
     }
@@ -40,6 +54,18 @@ export function setup(options) {
         settings[option] = options[option];
     }
 
-    // Show what we're using as our settings for all requests
+    // Show what we're using as our default settings for all requests
     return settings;
+}
+
+export function get(url, options) {
+    if(url.length > 0) {
+        return new Request({
+            method : 'GET',
+            address : url,
+            options : options
+        });
+    } else {
+        return false;
+    }
 }

@@ -4,7 +4,7 @@
 // NOTE: Below are my instructions:
 
 // 1: Clean the /temp and /build dirs
-// 2: Transpile /source/go.js and /test/go.js and
+// 2: Copy the source/go.js to /temp/go.js for dependencies, transpiling, testing etc...
 // 3: Run our tests in the temp folder
 // 4: Copy over our library once all tests have passed to /build/go.js
 // 5: Minifiy /build/go.js to /build/go.min.js
@@ -20,11 +20,23 @@ module.exports = function(grunt) {
 		clean : {
 			default : ['temp/*.js']
 		},
-		babel : {
+		insert : {
 			default : {
+				src: 'test/reqs.js',
+				dest: 'temp/go.js',
+				match: '\/\/ {{Node Requirements}}'
+			}
+		},
+		babel : {
+			test : {
 				files: {
-	                'temp/go.js': 'source/go.js',
-					'temp/go.test.js': 'test/go.js',
+	                'temp/go.js' : 'temp/go.js',
+					'temp/go.test.js' : 'test/go.js'
+	            }
+			},
+			build : {
+				files: {
+	                'build/go.js' : 'source/go.js'
 	            }
 			}
 		},
@@ -34,7 +46,7 @@ module.exports = function(grunt) {
 		copy : {
 			default : {
 				files : [
-					{expand: false, src: ['temp/go.js'], dest: 'build/go.js'}
+					{expand: false, src: ['source/go.js'], dest: 'temp/go.js'}
 				]
 			}
 		},
@@ -47,5 +59,5 @@ module.exports = function(grunt) {
 		}
     });
 
-	grunt.registerTask('default', ['clean', 'babel', 'nodeunit', 'copy', 'uglify', 'clean']);
+	grunt.registerTask('default', ['clean', 'copy', 'insert', 'babel:test', 'nodeunit', 'babel:build', 'uglify', 'clean']);
 };
