@@ -58,6 +58,10 @@ export function setup(options) {
     return settings;
 }
 
+// export function options(url, options) {
+//
+// }
+
 export function get(url, options) {
     if(url.length > 0) {
         return new Request({
@@ -65,7 +69,27 @@ export function get(url, options) {
             address : url,
             options : options
         });
-    } else {
-        return false;
     }
+
+    return false;
 }
+
+// export function head(url, options) {
+//
+// }
+//
+// export function post(url, options) {
+//
+// }
+//
+// export function put(url, options) {
+//
+// }
+//
+// export function patch(url, options) {
+//
+// }
+//
+// export function delete(url, options) {
+//
+// }
