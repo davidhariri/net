@@ -11,12 +11,6 @@ let settings = {
     type : 'application/x-www-form-urlencoded; charset=UTF-8'
 }
 
-function log(something) {
-    if(Net.verbose) {
-        console.log(something);
-    }
-}
-
 class Request {
     // Define the defaults for all requests
     constructor({method = '', data = {}, address='', options = {}}) {
@@ -61,8 +55,6 @@ class Request {
 }
 
 class Net {
-    static verbose = false
-
     static setup(options) {
         // TODO: Allow the setup for all default requests
         for(const option in options) {
