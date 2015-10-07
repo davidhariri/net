@@ -6,7 +6,7 @@
 // {{Node Requirements}}
 
 // Define some default settings to use which can be overridden in setup
-let settings = {
+const settings = {
     headers : {},
     type : 'application/x-www-form-urlencoded; charset=UTF-8'
 }
@@ -23,11 +23,10 @@ class Request {
                 // FIXME: Async flag should be a configurable option
                 request.open(method, address, true);
 
-                // For all the headers, add them to the request
+                // For all the headers, add them to the request\
                 for(const header in settings.headers) {
-                    let content = headers[header];
                     // Add the Header
-                    request.setRequestHeader(header, content);
+                    request.setRequestHeader(header, settings.headers[header]);
                 }
 
                 // Define when to call resolve and when to call reject
@@ -56,16 +55,15 @@ class Request {
 
 class Net {
     static setup(options) {
-        // TODO: Allow the setup for all default requests
+        // TODO: Allow the setup for all default requests to reject with
+        // one function, but also override in the promise
+
         for(const option in options) {
             settings[option] = options[option];
         }
-
-        // Show what we're using as our default settings for all requests
-        return settings;
     }
 
-    static get(url, options) {
+    static get(url, options = {}) {
         if(url.length > 0) {
             return new Request({
                 method : 'GET',
@@ -77,27 +75,3 @@ class Net {
         return false;
     }
 }
-
-// export function options(url, options) {
-//
-// }
-
-// export function head(url, options) {
-//
-// }
-//
-// export function post(url, options) {
-//
-// }
-//
-// export function put(url, options) {
-//
-// }
-//
-// export function patch(url, options) {
-//
-// }
-//
-// export function delete(url, options) {
-//
-// }

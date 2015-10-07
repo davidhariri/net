@@ -13,11 +13,11 @@
         });
 
         Net
-        .get('localhost:4040/')
+        .get('http://localhost:4040/')
         .then(function(data) {
             console.log(data);
         }, function(error) {
-            console.log('Error');
+            console.log('Uh Oh:');
             console.log(error);
         });
     </script>
