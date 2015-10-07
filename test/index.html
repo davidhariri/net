@@ -6,12 +6,14 @@
     </head>
     <script src="../build/net.js"></script>
     <script type="text/javascript">
+        // Set up our net preferences
         Net.setup({
             headers : {
                 'Authorization' : 'helloworld'
             }
         });
 
+        // Test get requests
         Net
         .get('http://localhost:4040/')
         .then(function(data) {
