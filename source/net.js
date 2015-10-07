@@ -11,6 +11,12 @@ let settings = {
     type : 'application/x-www-form-urlencoded; charset=UTF-8'
 }
 
+function log(something) {
+    if(Net.verbose) {
+        console.log(something);
+    }
+}
+
 class Request {
     // Define the defaults for all requests
     constructor({method = '', data = {}, address='', options = {}}) {
@@ -32,7 +38,13 @@ class Request {
 
                 // Define when to call resolve and when to call reject
                 request.onload = function() {
-                    const response = request.responseText;
+                    let response = request.responseText;
+
+                    // TODO: Allow the user to flag off the auto-parser
+                    if(response[0] === "{" || response[0] === "[") {
+                        response = JSON.parse(response);
+                    }
+
                     resolve(response);
                 };
 
@@ -48,31 +60,35 @@ class Request {
     }
 }
 
-export function setup(options) {
-    // TODO: Allow the setup for all default requests
-    for(const option in options) {
-        settings[option] = options[option];
+class Net {
+    static verbose = false
+
+    static setup(options) {
+        // TODO: Allow the setup for all default requests
+        for(const option in options) {
+            settings[option] = options[option];
+        }
+
+        // Show what we're using as our default settings for all requests
+        return settings;
     }
 
-    // Show what we're using as our default settings for all requests
-    return settings;
+    static get(url, options) {
+        if(url.length > 0) {
+            return new Request({
+                method : 'GET',
+                address : url,
+                options : options
+            });
+        }
+
+        return false;
+    }
 }
 
 // export function options(url, options) {
 //
 // }
-
-export function get(url, options) {
-    if(url.length > 0) {
-        return new Request({
-            method : 'GET',
-            address : url,
-            options : options
-        });
-    }
-
-    return false;
-}
 
 // export function head(url, options) {
 //

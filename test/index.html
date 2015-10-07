@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>net.js test</title>
+    </head>
+    <script src="../build/net.js"></script>
+    <script type="text/javascript">
+        Net.setup({
+            headers : {
+                'Authorization' : 'helloworld'
+            }
+        });
+
+        Net
+        .get('localhost:4040/')
+        .then(function(data) {
+            console.log(data);
+        }, function(error) {
+            console.log('Error');
+            console.log(error);
+        });
+    </script>
+    <body>
+
+    </body>
+</html>

@@ -19,21 +19,21 @@ module.exports = function(grunt) {
 		babel : {
 			build : {
 				files: {
-	                'build/go.js' : 'source/go.js'
+	                'build/net.js' : 'source/net.js'
 	            }
 			}
 		},
 		copy : {
 			default : {
 				files : [
-					{expand: false, src: ['source/go.js'], dest: 'temp/go.js'}
+					{expand: false, src: ['source/net.js'], dest: 'temp/net.js'}
 				]
 			}
 		},
 		uglify : {
 			default: {
 				files: {
-		        	'build/go.min.js': ['build/go.js']
+		        	'build/net.min.js': ['build/net.js']
 				}
 		    }
 		}

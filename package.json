@@ -1,28 +1,30 @@
 {
-  "name": "go.js",
-  "version": "0.0.1",
-  "description": "Go is a simple ajax library that promises to make your life better",
+  "name": "net.js",
+  "version": "0.1.0",
+  "description": "Net is a simple AJAX library that promises to make your life better",
   "main": "Gruntfile.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/davidhariri/gojs.git"
+    "url": "https://github.com/davidhariri/net.git"
   },
   "keywords": [
     "npm",
     "ajax",
     "library",
     "simple",
-    "small"
+    "small",
+    "netjs",
+    "net"
   ],
   "author": "David Hariri",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/davidhariri/gojs/issues"
+    "url": "https://github.com/davidhariri/net/issues"
   },
-  "homepage": "https://github.com/davidhariri/gojs",
+  "homepage": "https://github.com/davidhariri/net",
   "devDependencies": {
     "grunt": "^0.4.5",
     "grunt-babel": "^5.0.1",
