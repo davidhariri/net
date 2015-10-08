@@ -7,7 +7,9 @@
 
 // Define some default settings to use which can be overridden in setup
 const settings = {
-    headers : {},
+    headers : {
+        'Content-Type' : 'application/json'
+    },
     type : 'application/x-www-form-urlencoded; charset=UTF-8'
 }
 
@@ -19,6 +21,7 @@ class Response {
             code : request.status
         };
 
+        this.url = request.responseURL;
         this.json = JSON.parse(request.responseText);
         this.xreq = request;
     }
@@ -51,10 +54,14 @@ class Request {
                 request.onerror = function() {
                     const response = new Response(request);
                     reject(response);
-                }
+                };
 
                 // Send the request!
-                request.send();
+                if(Object.keys(data).length > 0) {
+                    request.send(JSON.stringify(data));
+                } else {
+                    request.send();
+                }
             });
         }
     }
@@ -75,7 +82,20 @@ class Net {
             return new Request({
                 method : 'GET',
                 address : url,
-                options : options
+                options
+            });
+        }
+
+        return false;
+    }
+
+    static post(url, data, options = {}) {
+        if(url.length > 0) {
+            return new Request({
+                method : 'POST',
+                data,
+                address : url,
+                options
             });
         }
 

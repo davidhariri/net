@@ -7,19 +7,28 @@
     <script src="../build/net.js"></script>
     <script type="text/javascript">
         // Set up our net preferences
-        Net.setup({
-            headers : {
-                'Authorization' : 'hello'
-            }
-        });
+        // Net.setup({
+        //
+        // });
 
         // Test get requests
+        // Net
+        // .get('http://localhost:4040/')
+        // .then(function(response) {
+        //     console.log(response);
+        // }, function(error) {
+        //     console.log(error);
+        // });
+
+        // Test post requests
         Net
-        .get('http://localhost:4040/')
-        .then(function(data) {
-            console.log(data);
+        .post('http://localhost:4040/client', {
+            super_key : '9do2Yrn7cY7uHACJkw',
+            client_email : 'test@test.com'
+        })
+        .then(function(response) {
+            console.log(response);
         }, function(error) {
-            console.log('Uh Oh:');
             console.log(error);
         });
     </script>

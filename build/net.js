@@ -13,7 +13,9 @@ var _createClass = (function () { function defineProperties(target, props) { for
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
 var settings = {
-    headers: {},
+    headers: {
+        'Content-Type': 'application/json'
+    },
     type: 'application/x-www-form-urlencoded; charset=UTF-8'
 };
 
@@ -26,6 +28,7 @@ var Response = function Response(request) {
         code: request.status
     };
 
+    this.url = request.responseURL;
     this.json = JSON.parse(request.responseText);
     this.xreq = request;
 };
@@ -71,7 +74,11 @@ function Request(_ref) {
             };
 
             // Send the request!
-            request.send();
+            if (Object.keys(data).length > 0) {
+                request.send(JSON.stringify(data));
+            } else {
+                request.send();
+            }
         });
     }
 };
@@ -99,6 +106,22 @@ var Net = (function () {
             if (url.length > 0) {
                 return new Request({
                     method: 'GET',
+                    address: url,
+                    options: options
+                });
+            }
+
+            return false;
+        }
+    }, {
+        key: 'post',
+        value: function post(url, data) {
+            var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+
+            if (url.length > 0) {
+                return new Request({
+                    method: 'POST',
+                    data: data,
                     address: url,
                     options: options
                 });
