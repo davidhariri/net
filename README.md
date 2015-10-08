@@ -1,6 +1,6 @@
 #Net
 ##Testing
-Because this package is meant for a browser environment, I felt it was best to test in a browser. Just load the test/index.html file and watch the tests complete :grinning:
+Because this package is meant for a browser environment, I felt it was best to test in a browser. This means we have no prescribed method for testing. Test however you like!
 
 ##About
 Net is a JavaScript library for making JSON-bearing XHR requests. It's goals are to be minimal, easy to write and fun to develop with. It was developed to meet the needs of modern web applications in a browser environment. You can think of it as a micro-library for making your traditional `$.ajax` JQuery requests, but without the bloat of JQuery. It also uses promises instead of callbacks so your eyes won't bleed and it's small (1kb minified), so it won't make your app slow.
