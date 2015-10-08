@@ -11,6 +11,19 @@ const settings = {
     type : 'application/x-www-form-urlencoded; charset=UTF-8'
 }
 
+class Response {
+    constructor(request) {
+        this.text = request.responseText;
+        this.status = {
+            text : request.statusText,
+            code : request.status
+        };
+
+        this.json = JSON.parse(request.responseText);
+        this.xreq = request;
+    }
+}
+
 class Request {
     // Define the defaults for all requests
     constructor({method = '', data = {}, address='', options = {}}) {
@@ -31,18 +44,12 @@ class Request {
 
                 // Define when to call resolve and when to call reject
                 request.onload = function() {
-                    let response = request.responseText;
-
-                    // TODO: Allow the user to flag off the auto-parser
-                    if(response[0] === "{" || response[0] === "[") {
-                        response = JSON.parse(response);
-                    }
-
+                    const response = new Response(request);
                     resolve(response);
                 };
 
                 request.onerror = function() {
-                    const response = request.responseText;
+                    const response = new Response(request);
                     reject(response);
                 }
 

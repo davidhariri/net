@@ -17,6 +17,19 @@ var settings = {
     type: 'application/x-www-form-urlencoded; charset=UTF-8'
 };
 
+var Response = function Response(request) {
+    _classCallCheck(this, Response);
+
+    this.text = request.responseText;
+    this.status = {
+        text: request.statusText,
+        code: request.status
+    };
+
+    this.json = JSON.parse(request.responseText);
+    this.xreq = request;
+};
+
 var Request =
 // Define the defaults for all requests
 function Request(_ref) {
@@ -48,18 +61,12 @@ function Request(_ref) {
 
             // Define when to call resolve and when to call reject
             request.onload = function () {
-                var response = request.responseText;
-
-                // TODO: Allow the user to flag off the auto-parser
-                if (response[0] === "{" || response[0] === "[") {
-                    response = JSON.parse(response);
-                }
-
+                var response = new Response(request);
                 resolve(response);
             };
 
             request.onerror = function () {
-                var response = request.responseText;
+                var response = new Response(request);
                 reject(response);
             };
 
