@@ -1,11 +1,8 @@
-// © David Hariri, 2015
-// Developed while working on Volley
+// @Author: David Hariri
 
 // TODO: Publish to NPM
-// TODO: Better error handling
-// {{Node Requirements}}
 
-// Define some default settings to use which can be overridden in setup
+// Define some default settings to use which can be overridden in setup if need be
 const settings = {
     headers : {
         'Content-Type' : 'application/json'
@@ -93,6 +90,45 @@ class Net {
         if(url.length > 0) {
             return new Request({
                 method : 'POST',
+                data,
+                address : url,
+                options
+            });
+        }
+
+        return false;
+    }
+
+    static put(url, data, options = {}) {
+        if(url.length > 0) {
+            return new Request({
+                method : 'PUT',
+                data,
+                address : url,
+                options
+            });
+        }
+
+        return false;
+    }
+
+    static patch(url, data, options = {}) {
+        if(url.length > 0) {
+            return new Request({
+                method : 'PATCH',
+                data,
+                address : url,
+                options
+            });
+        }
+
+        return false;
+    }
+
+    static delete(url, data, options = {}) {
+        if(url.length > 0) {
+            return new Request({
+                method : 'DELETE',
                 data,
                 address : url,
                 options
