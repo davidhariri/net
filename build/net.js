@@ -1,11 +1,8 @@
-// © David Hariri, 2015
-// Developed while working on Volley
+// @Author: David Hariri
 
 // TODO: Publish to NPM
-// TODO: Better error handling
-// {{Node Requirements}}
 
-// Define some default settings to use which can be overridden in setup
+// Define some default settings to use which can be overridden in setup if need be
 'use strict';
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -121,6 +118,54 @@ var Net = (function () {
             if (url.length > 0) {
                 return new Request({
                     method: 'POST',
+                    data: data,
+                    address: url,
+                    options: options
+                });
+            }
+
+            return false;
+        }
+    }, {
+        key: 'put',
+        value: function put(url, data) {
+            var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+
+            if (url.length > 0) {
+                return new Request({
+                    method: 'PUT',
+                    data: data,
+                    address: url,
+                    options: options
+                });
+            }
+
+            return false;
+        }
+    }, {
+        key: 'patch',
+        value: function patch(url, data) {
+            var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+
+            if (url.length > 0) {
+                return new Request({
+                    method: 'PATCH',
+                    data: data,
+                    address: url,
+                    options: options
+                });
+            }
+
+            return false;
+        }
+    }, {
+        key: 'delete',
+        value: function _delete(url, data) {
+            var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+
+            if (url.length > 0) {
+                return new Request({
+                    method: 'DELETE',
                     data: data,
                     address: url,
                     options: options
