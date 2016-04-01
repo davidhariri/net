@@ -1,7 +1,5 @@
 // @Author: David Hariri
 
-// TODO: Publish to NPM
-
 // Define some default settings to use which can be overridden in setup if need be
 const settings = {
     headers : {
@@ -19,7 +17,7 @@ class Response {
         };
 
         this.url = request.responseURL;
-        this.json = JSON.parse(request.responseText);
+        this.json = request.responseText.length ? JSON.parse(request.responseText) : {};
         this.xreq = request;
     }
 }

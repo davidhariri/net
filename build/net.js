@@ -26,7 +26,7 @@ var Response = function Response(request) {
     };
 
     this.url = request.responseURL;
-    this.json = JSON.parse(request.responseText);
+    this.json = request.responseText.length ? JSON.parse(request.responseText) : {};
     this.xreq = request;
 };
 

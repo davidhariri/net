@@ -1,59 +1,58 @@
 #Net
 ##Testing
-Because this package is meant for a browser environment, I felt it was best to test in a browser. This means we have no prescribed method for testing. Test however you like!
+Net is a browser plug in so testing outside of the browser seemed ill-advised. Instead, open up the **/test/test.html** in your browser and open your console to see the results of the tests.
 
 ##About
-Net is a JavaScript library for making JSON-bearing XHR requests. It's goals are to be minimal, easy to write and fun to develop with. It was developed to meet the needs of modern web applications in a browser environment. You can think of it as a micro-library for making your traditional `$.ajax` JQuery requests, but without the bloat of JQuery. It also uses promises instead of callbacks so your eyes won't bleed and it's small (1kb minified), so it won't make your app slow.
+Net is a JavaScript library for making XHR requests. It's goals are to be minimal, easy to use and fun to develop with. It was developed to meet the needs of modern web applications in a browser environment. You can think of it as a micro-library for making your traditional `$.ajax` JQuery requests, but without the bloat of JQuery. It also uses promises instead of callbacks so your eyes won't bleed and it's small (1kb minified), so it won't make your app slow to load.
 
 ##Quick Start
-After including **net.js** or **net.min.js** in your project you can use it like this:
+Install Net like this:
+```shell
+npm install net.js --save
+```
+
+After including **build/net.js** or **build/net.min.js** in your project you can use it like this:
 
 ```js
 Net
 .get('https://api.giraffefacts.com/facts')
 .then((facts) => {
-  this.forEach((fact) => {
-    console.log(fact);
-  });
+    this.forEach((fact) => {
+        console.log(fact);
+    });
 });
-
-// You could also rename Net to anything you like:
-// var PANTS = Net;
-// PANTS.get(...).then(...);
-
 ```
 
-##Set Up
+You could also rename Net to anything you like:
+```js
+var PANTS = Net;
+
+PANTS.get(...).then(...);
+```
+
+##Global Setup
 ```js
 Net.setup({
-  headers : {
-    'Authorization' : `Basic ${window.atob('giraffes')}`;
-  },
-  reject(reason) {
-    // This is where you could globally handle all request rejections
-
-    // You could always override this on any individual request
-    // By specifying a second function in your .then() call:
-
-    // Net.get(...).then((response) => {
-    //     // The request was successful.
-    // }, (error) => {
-    //     // The request was rejected.
-    // })
-  }
+    headers : {
+        'Authorization' : `Basic ${window.atob('giraffes')}`,
+        'Content-Type' : 'application/json'
+    },
+    reject(reason) {
+        // This is where you could globally handle all request rejections
+    }
 });
 ```
+
 ##Use
-Net always returns a promise making it easy to catch errors, chain functions and write cleaner code. Behold the following example:
+Net always returns a promise making it easy to catch errors, chain functions and write cleaner code. Check out the following example:
+
 ```js
 Net
-.get('https://api.giraffefacts.com/facts')
-.then((facts) => {
-  facts.map((fact) => {
-    console.log(fact);
-  });
+.get('https://api.dhariri.com/articles/')
+.then((articles) => {
+    // Request succeeded, do something with 'articles'
 }, (reason) => {
-  // Something bad happened
-  console.log(reason);
+    // Something bad happened
+    console.log(reason);
 });
 ```
