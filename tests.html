@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Tests</title>
+    </head>
+    <script src="build/net.js"></script>
+    <script type="text/javascript">
+        // A simple class for testing Net methods
+        class Test {
+            constructor(assertion, description) {
+                this.passed = false;
+                this.assertion = assertion;
+                this.description = description;
+            }
+
+            run() {
+                this.description = `%c${this.description}`;
+
+                if(this.assertion) {
+                    this.passed = true;
+                }
+
+                // Log the result of the test
+                console.log(`${this.description}: ${this.passed ? '✔' : '✘'}`, `color:${this.passed ? 'green' : 'red'}`);
+            }
+        }
+
+        // Test getting a webpage
+        // Should result in a 200, but not be json
+        Net
+        .get('https://dhariri.com/')
+        .then(function(response) {
+            const getHTMLTest = new Test((response.text.length > 0), 'Getting valid HTML').run();
+        });
+
+        // Test getting some JSON
+        // Should result in a 200 and have a json object
+        Net
+        .get('https://api.dhariri.com/articles/')
+        .then(function(response) {
+            const getJSONTest = new Test((response.json), 'Getting valid JSON').run();
+        });
+    </script>
+    <body>
+
+    </body>
+</html>
