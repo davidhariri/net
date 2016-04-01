@@ -64,3 +64,16 @@ Net is a JavaScript library for making XHR requests. It's goals are to be minima
 
 ##Testing Net
 Net is a browser plug in so testing outside of the browser seemed ill-advised. Instead, open up the **tests.html** in your browser and open your console to see the results of the tests.
+
+##Developing for Net
+Install Net's dependencies:
+```shell
+npm install
+```
+
+Make your improvements, make some tests in **tests.html** and rebuild:
+```shell
+grunt
+```
+
+Test your improvements by opening the **tests.html** in your browser and checking the console.
