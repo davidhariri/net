@@ -1,6 +1,6 @@
 {
   "name": "net.js",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Net is a simple AJAX library that promises to make your life better",
   "main": "Gruntfile.js",
   "scripts": {
