@@ -17,7 +17,14 @@ class Response {
         };
 
         this.url = request.responseURL;
-        this.json = request.responseText.length ? JSON.parse(request.responseText) : {};
+        this.json = false;
+
+        try {
+            this.json = JSON.parse(request.responseText);
+        } catch (e) {
+            console.warn(e);
+        }
+
         this.xreq = request;
     }
 }

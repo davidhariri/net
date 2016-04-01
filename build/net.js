@@ -1,7 +1,5 @@
 // @Author: David Hariri
 
-// TODO: Publish to NPM
-
 // Define some default settings to use which can be overridden in setup if need be
 'use strict';
 
@@ -26,7 +24,14 @@ var Response = function Response(request) {
     };
 
     this.url = request.responseURL;
-    this.json = request.responseText.length ? JSON.parse(request.responseText) : {};
+    this.json = false;
+
+    try {
+        this.json = JSON.parse(request.responseText);
+    } catch (e) {
+        console.warn(e);
+    }
+
     this.xreq = request;
 };
 
