@@ -1,5 +1,3 @@
-// @Author: David Hariri
-
 'use strict';
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
@@ -35,8 +33,6 @@ var NetResponse = function NetResponse(request) {
     this.xreq = request;
 };
 
-var NetAllowedMethods = new Set(['GET', 'POST', 'PUT', 'PATCH', 'DELETE']);
-
 var NetRequest =
 // Define the defaults for all requests
 function NetRequest(method, address, data, headers) {
@@ -49,13 +45,15 @@ function NetRequest(method, address, data, headers) {
     this.response = null;
 
     // Check method valid
-    if (!NetAllowedMethods.has(method)) {
+    if (!__NET_ALLOWED_METHODS.has(method)) {
         console.warn('Sorry, \'' + method + '\' is not a supported HTTP method');
+        return false;
     }
 
     // Check valid URL
     if (!(typeof address === 'string') && address.length > 0) {
         console.warn('Sorry, \'' + address + '\' is not a supported HTTP address');
+        return false;
     }
 
     // Return a Promise to the Caller
@@ -112,8 +110,8 @@ var Net = (function () {
             return true;
         }
     }, {
-        key: 'makeNetRequest',
-        value: function makeNetRequest(path, method, data, headers) {
+        key: 'request',
+        value: function request(path, method, data, headers) {
             // Override certain headers
             try {
                 return new NetRequest(method, typeof this.root === 'string' ? '' + this.root + path : path, data || null, typeof headers === 'object' ? _extends({}, this.headers, headers) : this.headers);
@@ -126,29 +124,32 @@ var Net = (function () {
     }, {
         key: 'get',
         value: function get(path, data, headers) {
-            return this.makeNetRequest(path, 'GET', data, headers);
+            return this.request(path, 'GET', data, headers);
         }
     }, {
         key: 'post',
         value: function post(path, data, headers) {
-            return this.makeNetRequest(path, 'POST', data, headers);
+            return this.request(path, 'POST', data, headers);
         }
     }, {
         key: 'put',
         value: function put(path, data, headers) {
-            return this.makeNetRequest(path, 'PUT', data, headers);
+            return this.request(path, 'PUT', data, headers);
         }
     }, {
         key: 'patch',
         value: function patch(path, data, headers) {
-            return this.makeNetRequest(path, 'PATCH', data, headers);
+            return this.request(path, 'PATCH', data, headers);
         }
     }, {
         key: 'delete',
         value: function _delete(path, data, headers) {
-            return this.makeNetRequest(path, 'DELETE', data, headers);
+            return this.request(path, 'DELETE', data, headers);
         }
     }]);
 
     return Net;
 })();
+
+var __NET_ALLOWED_METHODS = new Set(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']);
+var __NET_AUTHORS = new Set(['David Hariri']);

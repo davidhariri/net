@@ -1,5 +1,3 @@
-// @Author: David Hariri
-
 class NetResponse {
     constructor(request, debug=false) {
         this.text = request.responseText;
@@ -25,8 +23,6 @@ class NetResponse {
     }
 }
 
-const NetAllowedMethods = new Set(['GET', 'POST', 'PUT', 'PATCH', 'DELETE']);
-
 class NetRequest {
     // Define the defaults for all requests
     constructor(method, address, data, headers) {
@@ -35,13 +31,15 @@ class NetRequest {
         this.response = null;
 
         // Check method valid
-        if(!NetAllowedMethods.has(method)) {
+        if(!__NET_ALLOWED_METHODS.has(method)) {
             console.warn(`Sorry, '${method}' is not a supported HTTP method`);
+            return false;
         }
 
         // Check valid URL
         if(!(typeof address === 'string') && address.length > 0) {
             console.warn(`Sorry, '${address}' is not a supported HTTP address`);
+            return false;
         }
 
         // Return a Promise to the Caller
@@ -95,7 +93,7 @@ class Net {
         return true;
     }
 
-    makeNetRequest(path, method, data, headers) { // Override certain headers
+    request(path, method, data, headers) { // Override certain headers
         try {
             return new NetRequest(
                 method,
@@ -111,22 +109,25 @@ class Net {
     }
 
     get(path, data, headers) {
-        return this.makeNetRequest(path, 'GET', data, headers);
+        return this.request(path, 'GET', data, headers);
     }
 
     post(path, data, headers) {
-        return this.makeNetRequest(path, 'POST', data, headers);
+        return this.request(path, 'POST', data, headers);
     }
 
     put(path, data, headers) {
-        return this.makeNetRequest(path, 'PUT', data, headers);
+        return this.request(path, 'PUT', data, headers);
     }
 
     patch(path, data, headers) {
-        return this.makeNetRequest(path, 'PATCH', data, headers);
+        return this.request(path, 'PATCH', data, headers);
     }
 
     delete(path, data, headers) {
-        return this.makeNetRequest(path, 'DELETE', data, headers);
+        return this.request(path, 'DELETE', data, headers);
     }
 }
+
+const __NET_ALLOWED_METHODS = new Set(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']);
+const __NET_AUTHORS = new Set(['David Hariri']);
