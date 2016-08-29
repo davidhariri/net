@@ -14,9 +14,9 @@ var myAPI = new Net();
 
 myAPI
 .get('https://api.dhariri.com/articles/')
-.then((facts) => {
+.then((response) => {
     // Got 'em!
-    facts.forEach((fact) => {
+    response.json.forEach((fact) => {
         console.log(fact);
     });
 }).catch((error) => {
