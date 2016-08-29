@@ -10,14 +10,14 @@ npm install net.js --save
 After including **build/net.min.js** in your project you can use it like this:
 
 ```js
-var myAPI = new Net();
+var myAPI = new Net('https://api.dhariri.com/');
 
 myAPI
-.get('https://api.dhariri.com/articles/')
+.get('articles/')
 .then((response) => {
     // Got 'em!
-    response.json.forEach((fact) => {
-        console.log(fact);
+    response.json.articles.forEach((article) => {
+        console.log(article);
     });
 }).catch((error) => {
     // Something bad happened...
