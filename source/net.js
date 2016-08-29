@@ -1,145 +1,132 @@
 // @Author: David Hariri
 
-// Define some default settings to use which can be overridden in setup if need be
-const settings = {
-    headers : {
-        'Content-Type' : 'application/json'
-    },
-    type : 'application/x-www-form-urlencoded; charset=UTF-8'
-}
-
-class Response {
-    constructor(request) {
+class NetResponse {
+    constructor(request, debug=false) {
         this.text = request.responseText;
+
         this.status = {
             text : request.statusText,
             code : request.status
         };
 
         this.url = request.responseURL;
-        this.json = false;
+        this.json = null;
+        this.debug = debug;
 
         try {
             this.json = JSON.parse(request.responseText);
         } catch (e) {
-            console.warn(e);
+            if(this.debug) {
+                console.warn('Failed to parse JSON', e);
+            }
         }
 
         this.xreq = request;
     }
 }
 
-class Request {
+const NetAllowedMethods = new Set(['GET', 'POST', 'PUT', 'PATCH', 'DELETE']);
+
+class NetRequest {
     // Define the defaults for all requests
-    constructor({method = '', data = {}, address='', options = {}}) {
+    constructor(method, address, data, headers) {
         // Make a new request with the data provided
-        const request = new XMLHttpRequest();
-        // Only if the method and address are provided
-        if(method.length > 0 && address.length > 0) {
-            // Return a Promise to the Caller
-            return new Promise((resolve, reject) => {
-                // FIXME: Async flag should be a configurable option
-                request.open(method, address, true);
+        this.request = new XMLHttpRequest();
+        this.response = null;
 
-                // For all the headers, add them to the request\
-                for(const header in settings.headers) {
-                    // Add the Header
-                    request.setRequestHeader(header, settings.headers[header]);
-                }
-
-                // Define when to call resolve and when to call reject
-                request.onload = function() {
-                    const response = new Response(request);
-                    resolve(response);
-                };
-
-                request.onerror = function() {
-                    const response = new Response(request);
-                    reject(response);
-                };
-
-                // Send the request!
-                if(Object.keys(data).length > 0) {
-                    request.send(JSON.stringify(data));
-                } else {
-                    request.send();
-                }
-            });
+        // Check method valid
+        if(!NetAllowedMethods.has(method)) {
+            console.warn(`Sorry, '${method}' is not a supported HTTP method`);
         }
+
+        // Check valid URL
+        if(!(typeof address === 'string') && address.length > 0) {
+            console.warn(`Sorry, '${address}' is not a supported HTTP address`);
+        }
+
+        // Return a Promise to the Caller
+        return new Promise((resolve, reject) => {
+            this.request.open(method, address, true); // NOTE: Do we want to provide synchronous support?
+
+            // For all the headers, add them to the request
+            if(typeof headers === 'object') {
+                for(const header in headers) {
+                    this.request.setRequestHeader(header, headers[header]);
+                }
+            }
+
+            // Define when to call resolve and when to call reject
+            this.request.onload = () => {
+                this.response = new NetResponse(this.request);
+                resolve(this.response);
+            };
+
+            this.request.onerror = () => {
+                this.response = new NetResponse(this.request);
+                reject(this.response);
+            };
+
+            // Send the request!
+            try {
+                if(typeof data === 'object') {
+                    this.request.send(JSON.stringify(data));
+                } else {
+                    this.request.send();
+                }
+            } catch (e) {
+                console.warn('Failed to send request', e);
+            }
+        });
     }
 }
 
 class Net {
-    static setup(options) {
-        // TODO: Allow the setup for all default requests to reject with
-        // one function, but also override in the promise
+    constructor(root, headers) {
+        // Define the default headers for NetRequests
+        this.headers = headers || {
+            'Content-Type' : 'application/json'
+        };
 
-        for(const option in options) {
-            settings[option] = options[option];
-        }
+        this.root = root || null;
     }
 
-    static get(url, options = {}) {
-        if(url.length > 0) {
-            return new Request({
-                method : 'GET',
-                address : url,
-                options
-            });
+    setHeaders(headers) {
+        this.headers = {...this.headers, ...headers}
+        return true;
+    }
+
+    makeNetRequest(path, method, data, headers) { // Override certain headers
+        try {
+            return new NetRequest(
+                method,
+                (typeof this.root === 'string') ? `${this.root}${path}` : path,
+                data || null,
+                (typeof headers === 'object') ? {...this.headers, ...headers} : this.headers
+            );
+        } catch (e) {
+            console.warn(e);
         }
 
         return false;
     }
 
-    static post(url, data, options = {}) {
-        if(url.length > 0) {
-            return new Request({
-                method : 'POST',
-                data,
-                address : url,
-                options
-            });
-        }
-
-        return false;
+    get(path, data, headers) {
+        return this.makeNetRequest(path, 'GET', data, headers);
     }
 
-    static put(url, data, options = {}) {
-        if(url.length > 0) {
-            return new Request({
-                method : 'PUT',
-                data,
-                address : url,
-                options
-            });
-        }
-
-        return false;
+    post(path, data, headers) {
+        return this.makeNetRequest(path, 'POST', data, headers);
     }
 
-    static patch(url, data, options = {}) {
-        if(url.length > 0) {
-            return new Request({
-                method : 'PATCH',
-                data,
-                address : url,
-                options
-            });
-        }
-
-        return false;
+    put(path, data, headers) {
+        return this.makeNetRequest(path, 'PUT', data, headers);
     }
 
-    static delete(url, data, options = {}) {
-        if(url.length > 0) {
-            return new Request({
-                method : 'DELETE',
-                data,
-                address : url,
-                options
-            });
-        }
+    patch(path, data, headers) {
+        return this.makeNetRequest(path, 'PATCH', data, headers);
+    }
 
-        return false;
+    delete(path, data, headers) {
+        return this.makeNetRequest(path, 'DELETE', data, headers);
     }
 }

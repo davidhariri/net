@@ -1,183 +1,152 @@
 // @Author: David Hariri
 
-// Define some default settings to use which can be overridden in setup if need be
 'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-var settings = {
-    headers: {
-        'Content-Type': 'application/json'
-    },
-    type: 'application/x-www-form-urlencoded; charset=UTF-8'
-};
+var NetResponse = function NetResponse(request) {
+    var debug = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
 
-var Response = function Response(request) {
-    _classCallCheck(this, Response);
+    _classCallCheck(this, NetResponse);
 
     this.text = request.responseText;
+
     this.status = {
         text: request.statusText,
         code: request.status
     };
 
     this.url = request.responseURL;
-    this.json = false;
+    this.json = null;
+    this.debug = debug;
 
     try {
         this.json = JSON.parse(request.responseText);
     } catch (e) {
-        console.warn(e);
+        if (this.debug) {
+            console.warn('Failed to parse JSON', e);
+        }
     }
 
     this.xreq = request;
 };
 
-var Request =
-// Define the defaults for all requests
-function Request(_ref) {
-    var _ref$method = _ref.method;
-    var method = _ref$method === undefined ? '' : _ref$method;
-    var _ref$data = _ref.data;
-    var data = _ref$data === undefined ? {} : _ref$data;
-    var _ref$address = _ref.address;
-    var address = _ref$address === undefined ? '' : _ref$address;
-    var _ref$options = _ref.options;
-    var options = _ref$options === undefined ? {} : _ref$options;
+var NetAllowedMethods = new Set(['GET', 'POST', 'PUT', 'PATCH', 'DELETE']);
 
-    _classCallCheck(this, Request);
+var NetRequest =
+// Define the defaults for all requests
+function NetRequest(method, address, data, headers) {
+    var _this = this;
+
+    _classCallCheck(this, NetRequest);
 
     // Make a new request with the data provided
-    var request = new XMLHttpRequest();
-    // Only if the method and address are provided
-    if (method.length > 0 && address.length > 0) {
-        // Return a Promise to the Caller
-        return new Promise(function (resolve, reject) {
-            // FIXME: Async flag should be a configurable option
-            request.open(method, address, true);
+    this.request = new XMLHttpRequest();
+    this.response = null;
 
-            // For all the headers, add them to the request\
-            for (var header in settings.headers) {
-                // Add the Header
-                request.setRequestHeader(header, settings.headers[header]);
-            }
-
-            // Define when to call resolve and when to call reject
-            request.onload = function () {
-                var response = new Response(request);
-                resolve(response);
-            };
-
-            request.onerror = function () {
-                var response = new Response(request);
-                reject(response);
-            };
-
-            // Send the request!
-            if (Object.keys(data).length > 0) {
-                request.send(JSON.stringify(data));
-            } else {
-                request.send();
-            }
-        });
+    // Check method valid
+    if (!NetAllowedMethods.has(method)) {
+        console.warn('Sorry, \'' + method + '\' is not a supported HTTP method');
     }
+
+    // Check valid URL
+    if (!(typeof address === 'string') && address.length > 0) {
+        console.warn('Sorry, \'' + address + '\' is not a supported HTTP address');
+    }
+
+    // Return a Promise to the Caller
+    return new Promise(function (resolve, reject) {
+        _this.request.open(method, address, true); // NOTE: Do we want to provide synchronous support?
+
+        // For all the headers, add them to the request
+        if (typeof headers === 'object') {
+            for (var header in headers) {
+                _this.request.setRequestHeader(header, headers[header]);
+            }
+        }
+
+        // Define when to call resolve and when to call reject
+        _this.request.onload = function () {
+            _this.response = new NetResponse(_this.request);
+            resolve(_this.response);
+        };
+
+        _this.request.onerror = function () {
+            _this.response = new NetResponse(_this.request);
+            reject(_this.response);
+        };
+
+        // Send the request!
+        try {
+            if (typeof data === 'object') {
+                _this.request.send(JSON.stringify(data));
+            } else {
+                _this.request.send();
+            }
+        } catch (e) {
+            console.warn('Failed to send request', e);
+        }
+    });
 };
 
 var Net = (function () {
-    function Net() {
+    function Net(root, headers) {
         _classCallCheck(this, Net);
+
+        // Define the default headers for NetRequests
+        this.headers = headers || {
+            'Content-Type': 'application/json'
+        };
+
+        this.root = root || null;
     }
 
-    _createClass(Net, null, [{
-        key: 'setup',
-        value: function setup(options) {
-            // TODO: Allow the setup for all default requests to reject with
-            // one function, but also override in the promise
-
-            for (var option in options) {
-                settings[option] = options[option];
+    _createClass(Net, [{
+        key: 'setHeaders',
+        value: function setHeaders(headers) {
+            this.headers = _extends({}, this.headers, headers);
+            return true;
+        }
+    }, {
+        key: 'makeNetRequest',
+        value: function makeNetRequest(path, method, data, headers) {
+            // Override certain headers
+            try {
+                return new NetRequest(method, typeof this.root === 'string' ? '' + this.root + path : path, data || null, typeof headers === 'object' ? _extends({}, this.headers, headers) : this.headers);
+            } catch (e) {
+                console.warn(e);
             }
+
+            return false;
         }
     }, {
         key: 'get',
-        value: function get(url) {
-            var options = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
-
-            if (url.length > 0) {
-                return new Request({
-                    method: 'GET',
-                    address: url,
-                    options: options
-                });
-            }
-
-            return false;
+        value: function get(path, data, headers) {
+            return this.makeNetRequest(path, 'GET', data, headers);
         }
     }, {
         key: 'post',
-        value: function post(url, data) {
-            var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
-
-            if (url.length > 0) {
-                return new Request({
-                    method: 'POST',
-                    data: data,
-                    address: url,
-                    options: options
-                });
-            }
-
-            return false;
+        value: function post(path, data, headers) {
+            return this.makeNetRequest(path, 'POST', data, headers);
         }
     }, {
         key: 'put',
-        value: function put(url, data) {
-            var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
-
-            if (url.length > 0) {
-                return new Request({
-                    method: 'PUT',
-                    data: data,
-                    address: url,
-                    options: options
-                });
-            }
-
-            return false;
+        value: function put(path, data, headers) {
+            return this.makeNetRequest(path, 'PUT', data, headers);
         }
     }, {
         key: 'patch',
-        value: function patch(url, data) {
-            var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
-
-            if (url.length > 0) {
-                return new Request({
-                    method: 'PATCH',
-                    data: data,
-                    address: url,
-                    options: options
-                });
-            }
-
-            return false;
+        value: function patch(path, data, headers) {
+            return this.makeNetRequest(path, 'PATCH', data, headers);
         }
     }, {
         key: 'delete',
-        value: function _delete(url, data) {
-            var options = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
-
-            if (url.length > 0) {
-                return new Request({
-                    method: 'DELETE',
-                    data: data,
-                    address: url,
-                    options: options
-                });
-            }
-
-            return false;
+        value: function _delete(path, data, headers) {
+            return this.makeNetRequest(path, 'DELETE', data, headers);
         }
     }]);
 
