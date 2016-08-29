@@ -38,9 +38,6 @@ Net.setup({
     headers : {
         'Authorization' : `Basic ${window.atob('giraffes')}`,
         'Content-Type' : 'application/json'
-    },
-    reject(reason) {
-        // This is where you could globally handle all request rejections
     }
 });
 ```
