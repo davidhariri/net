@@ -2,3 +2,4 @@ test/client.js
 **/.DS_Store
 node_modules
 test/**
+.jshintrc
