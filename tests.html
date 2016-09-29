@@ -71,6 +71,18 @@
         .then(function(response) {
             const getJSONTest = new Test((response.json), 'Getting valid JSON with root and custom header').run();
         });
+
+
+        SHOES = new Net(
+            'https://api.dhariri.com/',
+            {
+                'Content-Type' : 'application/json',
+                'Custom-Header' : 'boogers'
+            }
+        );
+        SHOES.setup({"debug":true});
+        SHOES.post('articles/');
+        SHOES.get('articles/?successresponsedebuggerisworking');
     </script>
     <body>
 

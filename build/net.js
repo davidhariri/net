@@ -6,36 +6,51 @@ var _createClass = (function () { function defineProperties(target, props) { for
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-var NetResponse = function NetResponse(request) {
-    var debug = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
+var NetResponse = (function () {
+    function NetResponse(request) {
+        var debug = arguments.length <= 1 || arguments[1] === undefined ? false : arguments[1];
 
-    _classCallCheck(this, NetResponse);
+        _classCallCheck(this, NetResponse);
 
-    this.text = request.responseText;
+        this.text = request.responseText;
 
-    this.status = {
-        text: request.statusText,
-        code: request.status
-    };
+        this.status = {
+            text: request.statusText,
+            code: request.status
+        };
 
-    this.url = request.responseURL;
-    this.json = null;
-    this.debug = debug;
+        this.url = request.responseURL;
+        this.json = null;
 
-    try {
-        this.json = JSON.parse(request.responseText);
-    } catch (e) {
-        if (this.debug) {
-            console.warn('Failed to parse JSON', e);
+        try {
+            this.json = JSON.parse(request.responseText);
+        } catch (e) {
+            if (this.debug) {
+                console.warn('Failed to parse JSON', e);
+            }
         }
+
+        this.status.successful = this.status.code < 309;
+
+        this.xreq = request;
     }
 
-    this.xreq = request;
-};
+    _createClass(NetResponse, [{
+        key: 'log',
+        value: function log() {
+            var color = this.status.successful ? 'green' : 'red';
+            console.log('%c ' + this.status.code + ' ' + this.status.text + ' ' + this.url + '\n', "color:" + color, {
+                'data': this.json
+            });
+        }
+    }]);
+
+    return NetResponse;
+})();
 
 var NetRequest =
 // Define the defaults for all requests
-function NetRequest(method, address, data, headers) {
+function NetRequest(method, address, data, headers, debug) {
     var _this = this;
 
     _classCallCheck(this, NetRequest);
@@ -50,15 +65,23 @@ function NetRequest(method, address, data, headers) {
         return false;
     }
 
-    // Check valid URL
-    if (!(typeof address === 'string') && address.length > 0) {
+    // make sure address is a string and not empty
+    if (!(typeof address === 'string' && address.length > 0)) {
         console.warn('Sorry, \'' + address + '\' is not a supported HTTP address');
         return false;
     }
 
+    // log the request if debugging is on
+    if (debug) {
+        console.log('%c ' + method + ' ' + address, "color:blue", {
+            "data": data,
+            "headers": headers
+        });
+    }
+
     // Return a Promise to the Caller
     return new Promise(function (resolve, reject) {
-        _this.request.open(method, address, true); // NOTE: Do we want to provide synchronous support?
+        _this.request.open(method, address, true);
 
         // For all the headers, add them to the request
         if (typeof headers === 'object') {
@@ -71,11 +94,17 @@ function NetRequest(method, address, data, headers) {
         _this.request.onload = function () {
             _this.response = new NetResponse(_this.request);
             resolve(_this.response);
+
+            // log the request if debugging is on
+            if (debug) _this.response.log();
         };
 
         _this.request.onerror = function () {
             _this.response = new NetResponse(_this.request);
             reject(_this.response);
+
+            // log the request if debugging is on
+            if (debug) _this.response.log();
         };
 
         // Send the request!
@@ -99,13 +128,29 @@ var Net = (function () {
         this.headers = headers || {
             'Content-Type': 'application/json'
         };
-
+        this.config = {
+            'debug': false,
+            'history': false
+        };
         this.root = root || null;
     }
 
     _createClass(Net, [{
+        key: 'setup',
+        value: function setup(config) {
+            // make sure config is present and is an object
+            if (!(config && typeof config === 'object')) {
+                console.warn(e);
+                return;
+            }
+
+            this.config.debug = config.debug || false;
+            this.config.history = config.history || false;
+        }
+    }, {
         key: 'setHeaders',
         value: function setHeaders(headers) {
+            // combine provided headers and default headers
             this.headers = _extends({}, this.headers, headers);
             return true;
         }
@@ -114,7 +159,7 @@ var Net = (function () {
         value: function request(path, method, data, headers) {
             // Override certain headers
             try {
-                return new NetRequest(method, typeof this.root === 'string' ? '' + this.root + path : path, data || null, typeof headers === 'object' ? _extends({}, this.headers, headers) : this.headers);
+                return new NetRequest(method, typeof this.root === 'string' ? '' + this.root + path : path, data || null, typeof headers === 'object' ? _extends({}, this.headers, headers) : this.headers, this.config.debug);
             } catch (e) {
                 console.warn(e);
             }
