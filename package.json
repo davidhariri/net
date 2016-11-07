@@ -1,6 +1,6 @@
 {
   "name": "net.js",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "description": "Net is a light-weight networking library for the modern browser",
   "main": "Gruntfile.js",
   "scripts": {
