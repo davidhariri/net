@@ -79,6 +79,10 @@ class NetRequest {
                 reject(this.response);
             };
 
+             //these blank handlers need to be set to fix ie9
+            this.request.onprogress = function () { };
+            this.request.ontimeout = function () { };
+
             // Send the request!
             try {
                 if(typeof data === 'object') {
