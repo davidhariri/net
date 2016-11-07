@@ -77,8 +77,12 @@ function NetRequest(method, address, data, headers) {
 
         // For all the headers, add them to the request
         if (typeof headers === 'object') {
-            for (var header in headers) {
-                _this.request.setRequestHeader(header, headers[header]);
+            if ("withCredentials" in _this.request) {
+                for (var header in headers) {
+                    _this.request.setRequestHeader(header, headers[header]);
+                }
+            } else {
+                console.warn("Custom headers cannot be added in IE9 and lower");
             }
         }
 
@@ -92,10 +96,6 @@ function NetRequest(method, address, data, headers) {
             _this.response = new NetResponse(_this.request);
             reject(_this.response);
         };
-
-        //these blank handlers need to be set to fix ie9
-        _this.request.onprogress = function () {};
-        _this.request.ontimeout = function () {};
 
         // Send the request!
         try {
