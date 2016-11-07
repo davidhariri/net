@@ -31,7 +31,7 @@ class NetRequest {
         this.response = null;
 
         // Check method valid
-        if(!__NET_ALLOWED_METHODS.includes(method)) {
+        if(__NET_ALLOWED_METHODS.indexOf(method) < 0) {
             console.warn(`Sorry, '${method}' is not a supported HTTP method`);
             return false;
         }

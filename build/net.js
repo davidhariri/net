@@ -45,7 +45,8 @@ function NetRequest(method, address, data, headers) {
     this.response = null;
 
     // Check method valid
-    if (!__NET_ALLOWED_METHODS.includes(method)) {
+    console.log(1111, __NET_ALLOWED_METHODS.indexOf("GET") < 0);
+    if (__NET_ALLOWED_METHODS.indexOf(method) < 0) {
         console.warn('Sorry, \'' + method + '\' is not a supported HTTP method');
         return false;
     }
