@@ -45,7 +45,7 @@ function NetRequest(method, address, data, headers) {
     this.response = null;
 
     // Check method valid
-    if (!__NET_ALLOWED_METHODS.has(method)) {
+    if (!__NET_ALLOWED_METHODS.includes(method)) {
         console.warn('Sorry, \'' + method + '\' is not a supported HTTP method');
         return false;
     }
@@ -58,7 +58,22 @@ function NetRequest(method, address, data, headers) {
 
     // Return a Promise to the Caller
     return new Promise(function (resolve, reject) {
-        _this.request.open(method, address, true); // NOTE: Do we want to provide synchronous support?
+
+        if ("withCredentials" in _this.request) {
+            // XMLHttpRequest for Chrome/Firefox/Opera/Safari.
+            _this.request.open(method, address, true); // NOTE: Do we want to provide synchronous support?
+        } else if (typeof XDomainRequest != "undefined") {
+                // XDomainRequest for IE.
+                _this.request = new XDomainRequest();
+                _this.request.open(method, address);
+            } else {
+                // CORS not supported.
+                _this.request = null;
+            };
+
+        if (!_this.request) {
+            return;
+        };
 
         // For all the headers, add them to the request
         if (typeof headers === 'object') {
@@ -151,5 +166,5 @@ var Net = (function () {
     return Net;
 })();
 
-var __NET_ALLOWED_METHODS = new Set(['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']);
-var __NET_AUTHORS = new Set(['David Hariri']);
+var __NET_ALLOWED_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'];
+var __NET_AUTHORS = ['David Hariri'];

@@ -5,7 +5,8 @@ module.exports = function(grunt) {
 		babel : {
 			build : {
 				files: {
-	                'build/net.js' : 'source/net.js'
+	                'build/net.js' : 'source/net.js',
+	                'build/tests.js' : 'source/tests.js'
 	            }
 			}
 		},
