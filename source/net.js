@@ -7,6 +7,16 @@ class NetResponse {
             code : request.status
         };
 
+        // Set status code for XDomainRequest
+        if (typeof XDomainRequest != "undefined") {
+            let status = this.status.code;
+            status = 200;
+
+            this.onerror = function() {
+                status = null;
+            }
+        }
+
         this.url = request.responseURL;
         this.json = null;
         this.debug = debug;
@@ -52,6 +62,14 @@ class NetRequest {
                 // XDomainRequest for IE.
                 this.request = new XDomainRequest();
                 this.request.open(method, address);
+
+                // Bug fixes for XDomainRequest
+                this.request.timeout = 5000;
+                this.request.ontimeout = function () {
+                    this.response = new NetResponse(this.request);
+                    reject(this.response);
+                };
+                this.request.onprogress = function() { };
             } else {
                 // CORS not supported.
                 this.request = null;
